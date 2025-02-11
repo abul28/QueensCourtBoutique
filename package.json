@@ -1,15 +1,17 @@
 {
+  "homepage": "https://abul28/github.io/QueensCourtBoutique/",
   "name": "testsample",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
-  "homepage": "https://abul28.github.io/QueensCourtBoutique/",
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
