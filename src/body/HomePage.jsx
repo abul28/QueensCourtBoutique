@@ -1,0 +1,87 @@
+// src/components/HomePage.js
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Heart } from "lucide-react";
+import { collection, getDocs } from "@firebase/firestore";
+import { firestore } from "../firebase/Firebase";
+import "./HomePage.css";
+
+const HomePage = ({ searchQuery }) => {
+  const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
+
+  // Fetch products from Firestore
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(firestore, "products"));
+        const productsArray = querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        setProducts(productsArray);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Filter products based on search query
+  const filteredProducts = products.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const whatsappGroupLink = "https://chat.whatsapp.com/BBkmScIBR1y0fZbLiP2WsI";
+
+  const handlePurchaseClick = () => {
+    if (whatsappGroupLink) {
+      window.open(whatsappGroupLink, "_blank");
+    } else {
+      alert("WhatsApp group link is not set.");
+    }
+  };
+
+  const handleCardClick = (productId) => {
+    navigate(`/product/${productId}`);
+  };
+
+  return (
+    <div className="clothes-container">
+      <h2 className="section-title">Explore Our Collection</h2>
+      <div className="card-grid">
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((item) => (
+            <div key={item.id} className="clothing-card" onClick={() => handleCardClick(item.id)}>
+              <div className="flex">
+                <img src={item.imageUrl} alt={item.name} className="card-image" />
+                {/* Wishlist Icons */}
+                <Heart className="icon wishlist-icon" title="Wishlist" />
+              </div>
+              <div className="card-info">
+                <h3 className="product-name">{item.name}</h3>
+                <p className="product-description">{item.description}</p>
+                <p className="color-info">Color: {item.color}</p>
+                <div className="price-info">
+                  <span className="current-price">₹{item.price}</span>
+                  <span className="original-price">₹{item.originalPrice}</span>
+                  <span className="discount">{item.discount}% off</span>
+                  <button className="purchase-button" onClick={handlePurchaseClick}>
+                    Purchase
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="search-filter-alert">
+            <p>No products found for "{searchQuery}"</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default HomePage;
