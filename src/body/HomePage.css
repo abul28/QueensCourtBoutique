@@ -6,7 +6,11 @@
     max-height: 100vh;
     overflow-y: auto;
   }
-  
+
+  .mobile-search-bar{
+    display: none;
+  }
+
   .section-title {
     font-size: 2rem;
     font-weight: 600;
@@ -78,19 +82,19 @@
   }
   
   .current-price {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
     color: #4caf50;
   }
   
   .original-price {
-    font-size: 16px;
+    font-size: 14px;
     color: #999;
     text-decoration: line-through;
   }
   
   .discount {
-    font-size: 14px;
+    font-size: 12px;
     color: #e53935;
   }
 
@@ -145,7 +149,7 @@
   .purchase-button, .wishlist-button {
     background-color: #553C8B;
     color: white;
-    padding: 10px 28px;
+    padding: 10px 20px;
     border: none;
     border-radius: 5px;
     margin-left: 10px;
@@ -169,7 +173,45 @@
   /* Responsive Styles */
  @media (max-width: 768px) {
 
-  .se
+  .mobile-search-bar{
+    flex: 1;
+    display: flex;
+    max-width: 500px;
+    margin: 0 20px;
+    position: relative;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    align-items: center;
+    padding: 2px 5px;
+  }
+
+  .mobile-search-bar input {
+    width: 100%;
+    border: none;
+    outline: none;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border-radius: 25px;
+    background-color: transparent;
+  }
+  
+  .mobile-search-bar button {
+    background-color: #ffffff;
+    border: none;
+    color: gray;
+    padding: 4px 8px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .mobile-search-bar button:hover {
+    background-color: #0056b3;
+  }
 
   .card-grid {
     display: grid;
@@ -178,7 +220,8 @@
   }
 
   .section-title{
-    font-size: 1.6rem;
+    font-size: 1.1rem;
+    margin-top: 15px;
   }
   .clothing-card {
     background-color: white;
@@ -263,6 +306,10 @@
   .card-grid {
     grid-template-columns: repeat(2, 1fr); /* Two cards per row */
     gap: 0.6rem;
+  }
+
+  .search-bar{
+    display:block;
   }
 
   .clothes-container{

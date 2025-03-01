@@ -1,7 +1,14 @@
 // src/components/ManageProducts.js
 import React, { useState, useEffect } from "react";
 import { firestore } from "../firebase/Firebase";
-import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, } from "@firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  doc,
+} from "@firebase/firestore";
 import "./ManageProducts.css";
 
 const imgbbAPIKey = "4bb18285639da8bf34011af33da014a6";
@@ -21,17 +28,21 @@ const ManageProducts = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [imagePreview, setImagePreview] = useState("");
   const [imageFile, setImageFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch products from Firestore
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    const querySnapshot = await getDocs(collection(firestore, "products"));
+    const productsArray = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
+    setProducts(productsArray);
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    const fetchProducts = async () => {
-      const querySnapshot = await getDocs(collection(firestore, "products"));
-      const productsArray = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setProducts(productsArray);
-    };
     fetchProducts();
   }, []);
 
@@ -118,6 +129,7 @@ const ManageProducts = () => {
       setImageFile(null);
       setImagePreview("");
       alert("Product added successfully!");
+      fetchProducts();
     } catch (error) {
       console.error("Error adding product:", error);
     }
@@ -147,7 +159,19 @@ const ManageProducts = () => {
       });
 
       setIsEditing(false);
+      setNewProduct({
+        name: "",
+        description: "",
+        color: "",
+        originalPrice: "",
+        discount: "",
+        price: "",
+        imageUrl: "",
+      });
+      setImageFile(null);
+      setImagePreview("");
       alert("Product updated successfully!");
+      fetchProducts();
     } catch (error) {
       console.error("Error updating product:", error);
     }
@@ -159,6 +183,7 @@ const ManageProducts = () => {
       await deleteDoc(doc(firestore, "products", id));
       setProducts(products.filter((product) => product.id !== id));
       alert("Product deleted successfully!");
+      fetchProducts();
     } catch (error) {
       console.error("Error deleting product:", error);
     }
@@ -207,15 +232,6 @@ const ManageProducts = () => {
           value={newProduct.discount}
           onChange={handleChange}
         />
-        <input
-          type="number"
-          name="price"
-          placeholder="Price"
-          value={newProduct.price}
-          onChange={handleChange}
-          required
-          readOnly
-        />
         <input type="file" onChange={handleImageUpload} />
         {imagePreview && (
           <img src={imagePreview} alt="Product Preview" className="preview" />
@@ -223,20 +239,25 @@ const ManageProducts = () => {
         <button type="submit">{isEditing ? "Update" : "Add"}</button>
       </form>
 
-      <ul>
-        {products.map((product) => (
-          <li key={product.id}>
-            <h4>{product.name}</h4>
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="thumbnail"
-            /> <br/>
-            <button className="action-buttons edit" onClick={() => handleEditProduct(product)}>Edit</button>
-            <button className="action-buttons delete" onClick={() => handleDeleteProduct(product.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      {isLoading ? (
+        <p>Loading products...</p>
+      ) : (
+        <ul>
+          {products.map((product) => (
+            <li key={product.id}>
+              <h4>{product.name}</h4>
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                className="thumbnail"
+              />
+              <br />
+              <button className="action-buttons edit" onClick={() => handleEditProduct(product)}>Edit</button>
+              <button className="action-buttons delete" onClick={() => handleDeleteProduct(product.id)}>Delete</button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

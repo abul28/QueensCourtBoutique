@@ -1,50 +1,56 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./AdminLogin.css";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/Firebase";
 
-const AdimLogin = () => {
+const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Basic validation
-    if (email && password) {
-      alert("Login successful!");
-      navigate("/"); // Redirect to home after successful login
-    } else {
-      alert("Please enter both email and password.");
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      localStorage.setItem("isAuthenticated", "true"); // Store auth status
+      localStorage.setItem("isGuest", "false");
+      navigate("/home");
+    } catch (error) {
+      setError("Invalid email or password.");
     }
+  };
+
+  const handleContinueWithoutLogin = () => {
+    localStorage.setItem("isGuest", "true");
+    localStorage.setItem("isAuthenticated", "false");
+    navigate("/home");
   };
 
   return (
     <div className="login-container">
-      <div className="login-card">
-        <h2>Welcome Back!</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit">Login</button>
-        </form>
-        <p className="signup-text">
-          Don't have an account? <a href="/register">Sign Up</a>
-        </p>
-      </div>
+      <h2>Admin Login</h2>
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Login</button>
+      </form>
+      {error && <p className="error">{error}</p>}
+      <button onClick={handleContinueWithoutLogin}>Continue Without Login</button>
     </div>
   );
 };
 
-export default AdimLogin;
+export default AdminLogin;

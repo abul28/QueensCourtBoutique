@@ -1,12 +1,12 @@
 // src/components/HomePage.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { Menu, Search, ShoppingCart, X, Heart, Icon } from "lucide-react";
 import { collection, getDocs } from "@firebase/firestore";
 import { firestore } from "../firebase/Firebase";
 import "./HomePage.css";
 
-const HomePage = ({ searchQuery }) => {
+const HomePage = ({ searchQuery = "", onSearch }, ) => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
@@ -49,6 +49,17 @@ const HomePage = ({ searchQuery }) => {
 
   return (
     <div className="clothes-container">
+      {/* Search Bar */}
+      <div className="mobile-search-bar">
+          <input
+            type="text"
+            placeholder="Search products by title, category..."
+            onChange={(e) => onSearch(e.target.value)} // Update search query
+          />
+          <button>
+            <Search style={{ marginRight: "5px" }} />
+          </button>
+        </div>
       <h2 className="section-title">Explore Our Collection</h2>
       <div className="card-grid">
         {filteredProducts.length > 0 ? (
@@ -68,7 +79,7 @@ const HomePage = ({ searchQuery }) => {
                   <span className="original-price">₹{item.originalPrice}</span>
                   <span className="discount">{item.discount}% off</span>
                   <button className="purchase-button" onClick={handlePurchaseClick}>
-                    Purchase
+                    Order Now
                   </button>
                 </div>
               </div>
